@@ -784,6 +784,8 @@ int main ( int argc, char **argv )
 #ifdef SDL_HINT_RENDER_SCALE_QUALITY
 	xemucfg_define_num_option("sdlrenderquality", RENDER_SCALE_QUALITY, "Setting SDL hint for scaling method/quality on rendering (0, 1, 2)");
 #endif
+	xemucfg_define_num_option("stereoseparation", AUDIO_DEFAULT_SEPARATION, "Audio stereo separation; 100(original) ... 0(mono) ... -100(reversed-channels); default: " STRINGIFY(AUDIO_DEFAULT_SEPARATION));
+	xemucfg_define_num_option("mastervolume", AUDIO_DEFAULT_VOLUME, "Audio emulation mixing final volume (100=unchanged ... 0=silence); default: " STRINGIFY(AUDIO_DEFAULT_VOLUME));
 	if (xemucfg_parse_all(argc, argv))
 		return 1;
 	show_drive_led = xemucfg_get_bool("driveled");
@@ -823,7 +825,9 @@ int main ( int argc, char **argv )
 	mega65_init();
 	audio65_init(
 		SID_CYCLES_PER_SEC,		// SID cycles per sec
-		AUDIO_SAMPLE_FREQ		// sound mix freq
+		AUDIO_SAMPLE_FREQ,		// sound mix freq
+		xemucfg_get_ranged_num("mastervolume", 0, 100),
+		xemucfg_get_ranged_num("stereoseparation", -100, 100)
 	);
 	allow_mouse_grab = xemucfg_get_bool("allowmousegrab");
 	rtc_hour_offset = xemucfg_get_num("rtchofs");
